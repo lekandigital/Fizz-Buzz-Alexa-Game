@@ -5,12 +5,24 @@
  * */
 const Alexa = require('ask-sdk-core');
 
+// The invocationCount variable will be used to track how many times the skill has been called
+// and also to keep track of the current number in the fizz buzz game
+var invocationCount = 0;
+var userOrSystemTurn = false;
+
+
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
     },
     handle(handlerInput) {
-        const speakOutput = 'Welcome, you can say Hello or Help. Which would you like to try?';
+        const speakOutput = 
+        "Welcome to Fizz Buzz. \
+        We’ll each take turns counting up from one. \
+        However, you must replace numbers divisible by 3 with the word “fizz” and you must replace numbers divisible by 5 with the word “buzz”. \
+        If a number is divisible by both 3 and 5, you should instead say “fizz buzz”. \
+        If you get one wrong, you lose. \
+        OK, I'll start... One.";
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
@@ -20,6 +32,7 @@ const LaunchRequestHandler = {
 };
 
 const HelloWorldIntentHandler = {
+    
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'HelloWorldIntent';
@@ -29,10 +42,43 @@ const HelloWorldIntentHandler = {
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
+            .reprompt(speakOutput)
             //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
             .getResponse();
     }
 };
+
+const UserTurnIntentHandler = {
+    
+    canHandle(handlerInput) {
+        
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'UserTurnIntent';
+    }, 
+    handle(handlerInput) {
+        invocationCount++;
+
+        var guessNum = parseInt(Alexa.getSlotValue(handlerInput.requestEnvelope, 'number'), 10);
+
+        var speakOutput = "hello";
+
+        // if (guessNum++ % 15 === 0) {
+        //     speakOutput = "FizzBuzz";
+        // } else if (guessNum % 3 === 0) {
+        //     speakOutput = "Fizz";
+        // } else if (guessNum % 5 === 0) {
+        //     speakOutput = "Buzz";
+        // } else {
+        //     speakOutput = invocationCount;
+        // }
+
+        return handlerInput.responseBuilder
+            .speak("speakOutput")
+            .reprompt(speakOutput)
+            //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
+            .getResponse();
+    }
+}
 
 const HelpIntentHandler = {
     canHandle(handlerInput) {
@@ -145,6 +191,7 @@ exports.handler = Alexa.SkillBuilders.custom()
     .addRequestHandlers(
         LaunchRequestHandler,
         HelloWorldIntentHandler,
+        UserTurnIntentHandler,
         HelpIntentHandler,
         CancelAndStopIntentHandler,
         FallbackIntentHandler,
