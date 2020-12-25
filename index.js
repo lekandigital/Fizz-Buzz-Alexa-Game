@@ -5,13 +5,11 @@
  * */
  
 // todo 
-// Check when to use double equal or triple equal
-// Reread instructions
-// Maybe play game sound when user gets to ten
 // Make user or alexa starting random
-// Remove unnecessary increments
 // Add more intents (stop, repeat etc)
-// Make sure colon marks are good
+// Reread instructions
+// read the docs and make sure you're using the correct things
+// Make sure semicolon marks are okay
 
 const Alexa = require('ask-sdk-core');
 
@@ -68,78 +66,50 @@ const UserTurnIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'UserTurnIntent';
     }, 
     handle(handlerInput) {
-
-        let inputNum = Alexa.getSlotValue(handlerInput.requestEnvelope, 'number');
+        
+        let inputNum = parseInt(Alexa.getSlotValue(handlerInput.requestEnvelope, 'number'), 10);
         let inputFizz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'fizz');
         let inputBuzz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'buzz');
         let inputFizzBuzz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'fizzbuzz');
         
-        let speakOutput;
+        // is there a more elegant way to do this?
+        let inputString = undefined;
         
-        console.log("this is inputNum " + inputNum);
+        if (inputFizz != undefined) {
+            inputString = inputFizz;
+        } 
         
-        if (fizzBuzzBool(expectedNum) != true) {
-            inputNum = parseInt(Alexa.getSlotValue(handlerInput.requestEnvelope, 'number'), 10);
-            if  (inputNum > expectedNum) {
-                // too high
-                console.log("expectedNum from too high " + expectedNum);
-            } else if (inputNum < expectedNum) {
-                // too low
-                console.log("expectedNum from too low " + expectedNum);
-            } else if (inputNum == expectedNum) {
-                expectedNum++;
-                speakOutput = fizzBuzz(expectedNum);
-                expectedNum++;
-            } else {
-                // end game
-                console.log("expectedNum from end game " + expectedNum);
-            }
+        if (inputBuzz != undefined) {
+            inputString = inputBuzz;
+        } 
+        
+        if (inputFizzBuzz != undefined) {
+            inputString = inputFizzBuzz;
+        } 
+        
+        var speakOutput;
+        
+        console.log("This is inputNum " + inputNum);
+        console.log("This is inputFizz " + inputFizz);
+        console.log("This is inputBuzz " + inputBuzz);
+        console.log("This is inputFizzBuzz " + inputFizzBuzz);
+        console.log("This is expectedNum " + fizzBuzz(expectedNum));
+        console.log("This is expectedFizz " + fizzBuzz(expectedNum));
+        console.log("This is expectedBuzz " + fizzBuzz(expectedNum));
+        console.log("This is expectedFizzBuzz " + fizzBuzz(expectedNum));
 
+        if ((inputNum === fizzBuzz(expectedNum)) || inputString == fizzBuzz(expectedNum)) {
+            expectedNum++;
+            speakOutput = fizzBuzz(expectedNum).toString();
+            expectedNum++
+            return handlerInput.responseBuilder.speak(speakOutput).reprompt(speakOutput).getResponse();
         } else {
-            
-            if (fizzBuzzBool(expectedNum) == true) {
-                if (inputFizz == fizzBuzz(expectedNum)) {
-                    console.log("from fizz block pre increment " + expectedNum);
-                    expectedNum++;
-                    speakOutput = fizzBuzz(expectedNum);
-                    expectedNum++;
-                    console.log("output " + speakOutput);
-                    console.log("from fizz block " + expectedNum);
-                } else {
-                    // wrong fizz
-                    console.log("wrong fizz");
-                }
-                
-                if (inputBuzz == fizzBuzz(expectedNum)) {
-                    expectedNum++;
-                    speakOutput = fizzBuzz(expectedNum);
-                    expectedNum++;
-                    console.log("from buzz block " + expectedNum);
-                } else {
-                    // wrong buzz
-                    console.log("wrong buzz");
-                }
-                
-                if (inputFizzBuzz == fizzBuzz(expectedNum)) {
-                    expectedNum++;
-                    speakOutput = fizzBuzz(expectedNum);
-                    expectedNum++;
-                    console.log("from fizzbuzz block " + expectedNum);
-                } else {
-                    // wrong fizzbuzz
-                    console.log("wrong fizzbuzz");
-                }
-            } else {
-                console.log("could not undersand")
-            }
-            
+            console.log("expectedNum from end game " + expectedNum);
+            speakOutput = "I’m sorry, the correct response was " + fizzBuzz(expectedNum) + ". You lose! Thanks for playing Fizz Buzz. For another great Alexa game, check out Song Quiz!";
+            endGame();
+            return handlerInput.responseBuilder.speak(speakOutput).getResponse();
         }
-
-        return handlerInput.responseBuilder
-            .speak(speakOutput)
-            .reprompt(speakOutput)
-            //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
-            .getResponse();
+        
     }
 }
 
@@ -157,25 +127,12 @@ function fizzBuzz(givenNum) {
         return "fizz buzz";
     }
 
-	return givenNum.toString();
+	return givenNum;
 }
 
-// should i try to use two returns different after checking the type of the paramater? but i feel like that's complicated to read
-function fizzBuzzBool(givenNum) {
-    
-    if (givenNum % 3 === 0 && givenNum % 5 !== 0) {
-        return true;
-    }
-    
-    if (givenNum % 5 === 0 && givenNum % 3 !== 0) {
-        return true;
-    }
-    
-    if (givenNum % 3 === 0 && givenNum % 5 === 0) {
-        return true;
-    }
 
-	return false;
+function endGame() {
+    expectedNum = 0;
 }
 
 const HelpIntentHandler = {
