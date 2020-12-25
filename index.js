@@ -3,12 +3,21 @@
  * Please visit https://alexa.design/cookbook for additional examples on implementing slots, dialog management,
  * session persistence, api calls, and more.
  * */
+ 
+// todo 
+// Check when to use double equal or triple equal
+// Reread instructions
+// Maybe play game sound when user gets to ten
+// Make user or alexa starting random
+// Remove unnecessary increments
+// Add more intents (stop, repeat etc)
+// Make sure Colin marks are good
+
 const Alexa = require('ask-sdk-core');
 
-// The invocationCount variable will be used to track how many times the skill has been called
+// The expectedNum variable will be used to track how many times the skill has been called
 // and also to keep track of the current number in the fizz buzz game
-var invocationCount = 0;
-var userOrSystemTurn = false;
+var expectedNum = 0;
 
 
 const LaunchRequestHandler = {
@@ -16,13 +25,16 @@ const LaunchRequestHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
     },
     handle(handlerInput) {
+        expectedNum++;
+        console.log("expectedNum from launch " + expectedNum);
         const speakOutput = 
         "Welcome to Fizz Buzz. \
         We’ll each take turns counting up from one. \
         However, you must replace numbers divisible by 3 with the word “fizz” and you must replace numbers divisible by 5 with the word “buzz”. \
         If a number is divisible by both 3 and 5, you should instead say “fizz buzz”. \
         If you get one wrong, you lose. \
-        OK, I'll start... One.";
+        OK, I'll start... " + expectedNum;
+        expectedNum++;
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
@@ -56,28 +68,114 @@ const UserTurnIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'UserTurnIntent';
     }, 
     handle(handlerInput) {
-        invocationCount++;
 
-        var guessNum = parseInt(Alexa.getSlotValue(handlerInput.requestEnvelope, 'number'), 10);
+        let inputNum = Alexa.getSlotValue(handlerInput.requestEnvelope, 'number');
+        let inputFizz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'fizz');
+        let inputBuzz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'buzz');
+        let inputFizzBuzz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'fizzbuzz');
+        
+        let speakOutput;
+        
+        console.log("this is inputNum " + inputNum);
+        
+        if (fizzBuzzBool(expectedNum) != true) {
+            inputNum = parseInt(Alexa.getSlotValue(handlerInput.requestEnvelope, 'number'), 10);
+            if  (inputNum > expectedNum) {
+                // too high
+                console.log("expectedNum from too high " + expectedNum);
+            } else if (inputNum < expectedNum) {
+                // too low
+                console.log("expectedNum from too low " + expectedNum);
+            } else if (inputNum == expectedNum) {
+                expectedNum++;
+                speakOutput = fizzBuzz(expectedNum);
+                expectedNum++;
+            } else {
+                // end game
+                console.log("expectedNum from end game " + expectedNum);
+            }
 
-        var speakOutput = "hello";
-
-        // if (guessNum++ % 15 === 0) {
-        //     speakOutput = "FizzBuzz";
-        // } else if (guessNum % 3 === 0) {
-        //     speakOutput = "Fizz";
-        // } else if (guessNum % 5 === 0) {
-        //     speakOutput = "Buzz";
-        // } else {
-        //     speakOutput = invocationCount;
-        // }
+        } else {
+            
+            if (fizzBuzzBool(expectedNum) == true) {
+                if (inputFizz == fizzBuzz(expectedNum)) {
+                    console.log("from fizz block pre increment " + expectedNum);
+                    expectedNum++;
+                    speakOutput = fizzBuzz(expectedNum);
+                    expectedNum++;
+                    console.log("output " + speakOutput);
+                    console.log("from fizz block " + expectedNum);
+                } else {
+                    // wrong fizz
+                    console.log("wrong fizz");
+                }
+                
+                if (inputBuzz == fizzBuzz(expectedNum)) {
+                    expectedNum++;
+                    speakOutput = fizzBuzz(expectedNum);
+                    expectedNum++;
+                    console.log("from buzz block " + expectedNum);
+                } else {
+                    // wrong buzz
+                    console.log("wrong buzz");
+                }
+                
+                if (inputFizzBuzz == fizzBuzz(expectedNum)) {
+                    expectedNum++;
+                    speakOutput = fizzBuzz(expectedNum);
+                    expectedNum++;
+                    console.log("from fizzbuzz block " + expectedNum);
+                } else {
+                    // wrong fizzbuzz
+                    console.log("wrong fizzbuzz");
+                }
+            } else {
+                console.log("could not undersand")
+            }
+            
+        }
 
         return handlerInput.responseBuilder
-            .speak("speakOutput")
+            .speak(speakOutput)
             .reprompt(speakOutput)
             //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
             .getResponse();
     }
+}
+
+function fizzBuzz(givenNum) {
+    
+    if (givenNum % 3 === 0 && givenNum % 5 !== 0) {
+        return "fizz";
+    }
+    
+    if (givenNum % 5 === 0 && givenNum % 3 !== 0) {
+        return "buzz"; 
+    }
+    
+    if (givenNum % 3 === 0 && givenNum % 5 === 0) {
+        return "fizz buzz";
+    }
+
+	return givenNum.toString();
+}
+
+// should i try to use two returns different after checking the type of the paramater? but i feel like that's complicated to read
+function fizzBuzzBool(givenNum) {
+    
+    if (givenNum % 3 === 0 && givenNum % 5 !== 0) {
+        return true;
+    }
+    
+    if (givenNum % 5 === 0 && givenNum % 3 !== 0) {
+        return true;
+    }
+    
+    if (givenNum % 3 === 0 && givenNum % 5 === 0) {
+        return true;
+    }
+
+	return false;
 }
 
 const HelpIntentHandler = {
@@ -102,8 +200,11 @@ const CancelAndStopIntentHandler = {
                 || Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.StopIntent');
     },
     handle(handlerInput) {
+        
         const speakOutput = 'Goodbye!';
-
+        
+        expectedNum = 0;
+        
         return handlerInput.responseBuilder
             .speak(speakOutput)
             .getResponse();
@@ -140,7 +241,9 @@ const SessionEndedRequestHandler = {
     handle(handlerInput) {
         console.log(`~~~~ Session ended: ${JSON.stringify(handlerInput.requestEnvelope)}`);
         // Any cleanup logic goes here.
-        return handlerInput.responseBuilder.getResponse(); // notice we send an empty response
+        return handlerInput.responseBuilder
+            .speak("ending session")
+            .getResponse();
     }
 };
 /* *
