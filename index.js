@@ -24,8 +24,11 @@ const LaunchRequestHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
     },
     handle(handlerInput) {
-        expectedNum++;
+        
         console.log("expectedNum from launch " + expectedNum);
+        // increment expectedNum so the next number is said to the user
+        expectedNum++;
+        
         const speakOutput = 
         "Welcome to Fizz Buzz. \
         We’ll each take turns counting up from one. \
@@ -33,7 +36,6 @@ const LaunchRequestHandler = {
         If a number is divisible by both 3 and 5, you should instead say “fizz buzz”. \
         If you get one wrong, you lose. \
         OK, I'll start... " + expectedNum;
-        expectedNum++;
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
@@ -68,13 +70,18 @@ const UserTurnIntentHandler = {
     }, 
     handle(handlerInput) {
         
+        // increment expectedNum so that the value matches the user's and follows the game's progression
+        expectedNum++
+        
+        // declare variables that hold the values. --> is this comment needed?
+        var speakOutput;
         let inputNum = parseInt(Alexa.getSlotValue(handlerInput.requestEnvelope, 'number'), 10);
         let inputFizz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'fizz');
         let inputBuzz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'buzz');
         let inputFizzBuzz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'fizzbuzz');
+        // determine which non-number slot type is used if any
         let inputString = inputFizz || inputBuzz || inputFizzBuzz || undefined;
 
-        var speakOutput;
         
         console.log("This is inputNum " + inputNum);
         console.log("This is inputFizz " + inputFizz);
@@ -85,10 +92,11 @@ const UserTurnIntentHandler = {
         console.log("This is expectedBuzz " + fizzBuzz(expectedNum));
         console.log("This is expectedFizzBuzz " + fizzBuzz(expectedNum));
 
+        // check if the user's input is correct by seeing if inputNum (number slot type)
+        // equals expectedNum or the inputString equals correct string for expectedNu,
         if ((inputNum === fizzBuzz(expectedNum)) || inputString == fizzBuzz(expectedNum)) {
             expectedNum++;
             speakOutput = fizzBuzz(expectedNum).toString();
-            expectedNum++
             return handlerInput.responseBuilder.speak(speakOutput).reprompt(speakOutput).getResponse();
         } else {
             console.log("expectedNum from end game " + expectedNum);
@@ -100,6 +108,7 @@ const UserTurnIntentHandler = {
     }
 }
 
+// this function determines if the correct output (fizz or buzz or fizz buzz or a number) based on the the given number
 function fizzBuzz(givenNum) {
     
     if (givenNum % 3 === 0 && givenNum % 5 !== 0) {
@@ -117,7 +126,8 @@ function fizzBuzz(givenNum) {
 	return givenNum;
 }
 
-
+// this function is used to handle operations that need to be
+// done as the game ends such and reseting expectedNum
 function endGame() {
     expectedNum = 0;
 }
