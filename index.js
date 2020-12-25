@@ -11,7 +11,7 @@
 // Make user or alexa starting random
 // Remove unnecessary increments
 // Add more intents (stop, repeat etc)
-// Make sure colin marks are good
+// Make sure colon marks are good
 
 const Alexa = require('ask-sdk-core');
 
