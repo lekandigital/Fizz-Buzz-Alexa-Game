@@ -5,11 +5,12 @@
  * */
  
 // todo 
+// read the docs and make sure you're using the correct things
 // Make user or alexa starting random
 // Add more intents (stop, repeat etc)
 // Reread instructions
-// read the docs and make sure you're using the correct things
 // Make sure semicolon marks are okay
+// Add comments
 
 const Alexa = require('ask-sdk-core');
 
@@ -71,22 +72,8 @@ const UserTurnIntentHandler = {
         let inputFizz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'fizz');
         let inputBuzz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'buzz');
         let inputFizzBuzz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'fizzbuzz');
-        
-        // is there a more elegant way to do this?
-        let inputString = undefined;
-        
-        if (inputFizz != undefined) {
-            inputString = inputFizz;
-        } 
-        
-        if (inputBuzz != undefined) {
-            inputString = inputBuzz;
-        } 
-        
-        if (inputFizzBuzz != undefined) {
-            inputString = inputFizzBuzz;
-        } 
-        
+        let inputString = inputFizz || inputBuzz || inputFizzBuzz || undefined;
+
         var speakOutput;
         
         console.log("This is inputNum " + inputNum);
