@@ -4,14 +4,6 @@
  * session persistence, api calls, and more.
  * */
  
-// todo 
-// read the docs and make sure you're using the correct things
-// Make user or alexa starting random
-// Add more intents (stop, repeat etc)
-// Reread instructions
-// Make sure semicolon marks are okay
-// Add comments
-
 const Alexa = require('ask-sdk-core');
 
 // The expectedNum variable will be used to track how many times the skill has been called
@@ -56,7 +48,6 @@ const HelloWorldIntentHandler = {
         return handlerInput.responseBuilder
             .speak(speakOutput)
             .reprompt(speakOutput)
-            //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
             .getResponse();
     }
 };
@@ -73,7 +64,6 @@ const UserTurnIntentHandler = {
         // increment expectedNum so that the value matches the user's and follows the game's progression
         expectedNum++
         
-        // declare variables that hold the values. --> is this comment needed?
         var speakOutput;
         let inputNum = parseInt(Alexa.getSlotValue(handlerInput.requestEnvelope, 'number'), 10);
         let inputFizz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'fizz');
@@ -87,10 +77,7 @@ const UserTurnIntentHandler = {
         console.log("This is inputFizz " + inputFizz);
         console.log("This is inputBuzz " + inputBuzz);
         console.log("This is inputFizzBuzz " + inputFizzBuzz);
-        console.log("This is expectedNum " + fizzBuzz(expectedNum));
-        console.log("This is expectedFizz " + fizzBuzz(expectedNum));
-        console.log("This is expectedBuzz " + fizzBuzz(expectedNum));
-        console.log("This is expectedFizzBuzz " + fizzBuzz(expectedNum));
+        console.log("This is expectedNum/Fizz/Buzz/FizzBuzz " + fizzBuzz(expectedNum));
 
         // check if the user's input is correct by seeing if inputNum (number slot type)
         // equals expectedNum or the inputString equals correct string for expectedNu,
@@ -113,21 +100,17 @@ function fizzBuzz(givenNum) {
     
     if (givenNum % 3 === 0 && givenNum % 5 !== 0) {
         return "fizz";
-    }
-    
-    if (givenNum % 5 === 0 && givenNum % 3 !== 0) {
+    } else if (givenNum % 5 === 0 && givenNum % 3 !== 0) {
         return "buzz"; 
-    }
-    
-    if (givenNum % 3 === 0 && givenNum % 5 === 0) {
+    } else if (givenNum % 3 === 0 && givenNum % 5 === 0) {
         return "fizz buzz";
+    } else {
+        return givenNum;
     }
-
-	return givenNum;
 }
 
-// this function is used to handle operations that need to be
-// done as the game ends such and reseting expectedNum
+// this function is used to handle operations that have to be
+// completed as the game ends such and reseting expectedNum
 function endGame() {
     expectedNum = 0;
 }
@@ -157,7 +140,7 @@ const CancelAndStopIntentHandler = {
         
         const speakOutput = 'Goodbye!';
         
-        expectedNum = 0;
+        endGame();
         
         return handlerInput.responseBuilder
             .speak(speakOutput)
@@ -194,7 +177,7 @@ const SessionEndedRequestHandler = {
     },
     handle(handlerInput) {
         console.log(`~~~~ Session ended: ${JSON.stringify(handlerInput.requestEnvelope)}`);
-        // Any cleanup logic goes here.
+        endGame();
         return handlerInput.responseBuilder
             .speak("ending session")
             .getResponse();
@@ -256,5 +239,4 @@ exports.handler = Alexa.SkillBuilders.custom()
         IntentReflectorHandler)
     .addErrorHandlers(
         ErrorHandler)
-    .withCustomUserAgent('sample/hello-world/v1.2')
     .lambda();
