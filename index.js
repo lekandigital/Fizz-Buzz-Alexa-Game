@@ -81,7 +81,7 @@ const UserTurnIntentHandler = {
             return handlerInput.responseBuilder.speak(speakOutput).reprompt(speakOutput).getResponse();
         } else {
             console.log("expectedNum from end game " + expectedNum);
-            speakOutput = "I’m sorry, the correct response was " + fizzBuzz(expectedNum) + ". You lose! Thanks for playing Fizz Buzz. For another great Alexa game, check out Song Quiz!";
+            speakOutput = "You lose! I’m sorry, the correct response was " + fizzBuzz(expectedNum) + ". Thanks for playing Fizz Buzz. For another great Alexa game, check out Song Quiz!";
             endGame();
             return handlerInput.responseBuilder.speak(speakOutput).getResponse();
         }
@@ -120,7 +120,6 @@ function isInt(givenNum) {
 
 }
 
-// what would a good reaction to stop be?
 const HelpIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
@@ -144,7 +143,6 @@ const HelpIntentHandler = {
     }
 };
 
-// what would a good reaction to stop be?
 const RepeatIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
@@ -185,7 +183,7 @@ const CancelAndStopIntentHandler = {
     },
     handle(handlerInput) {
         
-        const speakOutput = 'Goodbye!';
+        const speakOutput = "Thanks for playing Fizz Buzz. For another great Alexa game, check out Song Quiz!";
         
         endGame();
         
