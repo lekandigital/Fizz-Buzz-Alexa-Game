@@ -63,7 +63,8 @@ const UserTurnIntentHandler = {
         console.log("This is inputString " + inputString);
         console.log("This is expectedNum/Fizz/Buzz/FizzBuzz " + fizzBuzz(expectedNum));
 
-        if (isInt(inputNum) == false && inputFizz.toLowerCase() != "fizz" && inputBuzz.toLowerCase() != "buzz" && inputFizzBuzz.toLowerCase() != "fizzbuzz" && inputFizzBuzz.toLowerCase() != "fizz buzz") {
+        // checks for unrecognized inputs by seeing if input is not a possible option
+        if (isInt(inputNum) == false && inputFizz != "fizz" && inputBuzz != "buzz" && inputFizzBuzz != "fizzbuzz" && inputFizzBuzz != "fizz buzz") {
             console.log("from unknown block");
             speakOutput = "I don't understand that response. Please try again.";
             return handlerInput.responseBuilder.speak(speakOutput).reprompt(speakOutput).getResponse();
@@ -108,6 +109,7 @@ function endGame() {
     expectedNum = 0;
 }
 
+// checks to see if input matches the int type
 function isInt(givenNum) {
     
     if (givenNum === parseInt(givenNum, 10)) {
@@ -117,8 +119,6 @@ function isInt(givenNum) {
     }
 
 }
-
-
 
 // what would a good reaction to stop be?
 const HelpIntentHandler = {
