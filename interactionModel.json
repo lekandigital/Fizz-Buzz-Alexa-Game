@@ -1,0 +1,102 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "frog dance",
+            "modelConfiguration": {
+                "fallbackIntentSensitivity": {
+                    "level": "LOW"
+                }
+            },
+            "intents": [
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": []
+                },
+                {
+                    "name": "UserTurnIntent",
+                    "slots": [
+                        {
+                            "name": "number",
+                            "type": "AMAZON.NUMBER"
+                        },
+                        {
+                            "name": "fizz",
+                            "type": "fizz"
+                        },
+                        {
+                            "name": "buzz",
+                            "type": "buzz"
+                        },
+                        {
+                            "name": "fizzbuzz",
+                            "type": "fizzbuzz"
+                        }
+                    ],
+                    "samples": [
+                        "{fizzbuzz}",
+                        "{buzz}",
+                        "{fizz}",
+                        "{number}"
+                    ]
+                },
+                {
+                    "name": "AMAZON.RepeatIntent",
+                    "samples": []
+                }
+            ],
+            "types": [
+                {
+                    "name": "fizz",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "fizz"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "buzz",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "buzz"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "fizzbuzz",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "fizz buzz"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "fizzbuzz"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
