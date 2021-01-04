@@ -24,26 +24,11 @@ const LaunchRequestHandler = {
         const speakOutput = 
         "Welcome to Fizz Buzz. \
         We’ll each take turns counting up from one. \
-        However, you must replace numbers divisible by 3 with the word “fizz” and you must replace numbers divisible by 5 with the word “buzz”. \
+        However, you must replace numbers divisible by 3 with the word “fizz” \
+        and you must replace numbers divisible by 5 with the word “buzz”. \
         If a number is divisible by both 3 and 5, you should instead say “fizz buzz”. \
         If you get one wrong, you lose. \
         OK, I'll start... " + expectedNum;
-
-        return handlerInput.responseBuilder
-            .speak(speakOutput)
-            .reprompt(speakOutput)
-            .getResponse();
-    }
-};
-
-const HelloWorldIntentHandler = {
-    
-    canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'HelloWorldIntent';
-    },
-    handle(handlerInput) {
-        const speakOutput = 'Hello World!';
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
@@ -61,9 +46,6 @@ const UserTurnIntentHandler = {
     }, 
     handle(handlerInput) {
         
-        // increment expectedNum so that the value matches the user's and follows the game's progression
-        expectedNum++
-        
         var speakOutput;
         let inputNum = parseInt(Alexa.getSlotValue(handlerInput.requestEnvelope, 'number'), 10);
         let inputFizz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'fizz');
@@ -71,14 +53,25 @@ const UserTurnIntentHandler = {
         let inputFizzBuzz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'fizzbuzz');
         // determine which non-number slot type is used if any
         let inputString = inputFizz || inputBuzz || inputFizzBuzz || undefined;
-
+        // inputString = inputString.toLowerCase();
         
         console.log("This is inputNum " + inputNum);
         console.log("This is inputFizz " + inputFizz);
         console.log("This is inputBuzz " + inputBuzz);
         console.log("This is inputFizzBuzz " + inputFizzBuzz);
+        console.log("This is inputFizzBuzz " + inputFizzBuzz);
+        console.log("This is inputString " + inputString);
         console.log("This is expectedNum/Fizz/Buzz/FizzBuzz " + fizzBuzz(expectedNum));
 
+        if (isInt(inputNum) == false && inputFizz.toLowerCase() != "fizz" && inputBuzz.toLowerCase() != "buzz" && inputFizzBuzz.toLowerCase() != "fizzbuzz" && inputFizzBuzz.toLowerCase() != "fizz buzz") {
+            console.log("from unknown block");
+            speakOutput = "I don't understand that response. Please try again.";
+            return handlerInput.responseBuilder.speak(speakOutput).reprompt(speakOutput).getResponse();
+        }
+        
+        // increment expectedNum so that the value matches the user's and follows the game's progression
+        expectedNum++
+        
         // check if the user's input is correct by seeing if inputNum (number slot type)
         // equals expectedNum or the inputString equals correct string for expectedNu,
         if ((inputNum === fizzBuzz(expectedNum)) || inputString == fizzBuzz(expectedNum)) {
@@ -115,14 +108,68 @@ function endGame() {
     expectedNum = 0;
 }
 
+function isInt(givenNum) {
+    
+    if (givenNum === parseInt(givenNum, 10)) {
+        return true;
+    } else {
+        return false;
+    }
+
+}
+
+
+
+// what would a good reaction to stop be?
 const HelpIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
     },
     handle(handlerInput) {
-        const speakOutput = 'You can say hello to me! How can I help?';
+        
+        const speakOutput = 
+        "The instructions are: \
+        We’ll each take turns counting up from one. \
+        However, you must replace numbers divisible by 3 with the word “fizz” \
+        and you must replace numbers divisible by 5 with the word “buzz”. \
+        If a number is divisible by both 3 and 5, you should instead say “fizz buzz”. \
+        If you get one wrong, you lose. The last response was " + fizzBuzz(expectedNum) + 
+        ". OK, it's your turn, let's continue. "; 
+        
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            .reprompt(speakOutput)
+            .getResponse();
+    }
+};
 
+// what would a good reaction to stop be?
+const RepeatIntentHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.RepeatIntent';
+    },
+    handle(handlerInput) {
+        
+        var speakOutput = ""
+        
+        if (fizzBuzz(expectedNum) == 1) {
+            speakOutput = 
+            "Welcome to Fizz Buzz. \
+            We’ll each take turns counting up from one. \
+            However, you must replace numbers divisible by 3 with the word “fizz” \
+            and you must replace numbers divisible by 5 with the word “buzz”. \
+            If a number is divisible by both 3 and 5, you should instead say “fizz buzz”. \
+            If you get one wrong, you lose. \
+            OK, I'll start... " + expectedNum;
+        } else {
+            speakOutput = 
+            "The last response was " + fizzBuzz(expectedNum) + 
+            ". OK, it's your turn, let's continue. ";  
+        }
+
+        
         return handlerInput.responseBuilder
             .speak(speakOutput)
             .reprompt(speakOutput)
@@ -158,7 +205,14 @@ const FallbackIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.FallbackIntent';
     },
     handle(handlerInput) {
-        const speakOutput = 'Sorry, I don\'t know about that. Please try again.';
+        const speakOutput = 
+        "The instructions are: \
+        We’ll each take turns counting up from one. \
+        However, you must replace numbers divisible by 3 with the word “fizz” \
+        and you must replace numbers divisible by 5 with the word “buzz”. \
+        If a number is divisible by both 3 and 5, you should instead say “fizz buzz”. \
+        If you get one wrong, you lose. The last response was " + fizzBuzz(expectedNum) + 
+        ". OK, it's your turn, let's continue. "; 
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
@@ -194,11 +248,11 @@ const IntentReflectorHandler = {
     },
     handle(handlerInput) {
         const intentName = Alexa.getIntentName(handlerInput.requestEnvelope);
-        const speakOutput = `You just triggered ${intentName}`;
+        const speakOutput = `You just triggered the ${intentName}`;
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
-            //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
+            .reprompt('add a reprompt if you want to keep the session open for the user to respond')
             .getResponse();
     }
 };
@@ -230,9 +284,9 @@ const ErrorHandler = {
 exports.handler = Alexa.SkillBuilders.custom()
     .addRequestHandlers(
         LaunchRequestHandler,
-        HelloWorldIntentHandler,
         UserTurnIntentHandler,
         HelpIntentHandler,
+        RepeatIntentHandler,
         CancelAndStopIntentHandler,
         FallbackIntentHandler,
         SessionEndedRequestHandler,
