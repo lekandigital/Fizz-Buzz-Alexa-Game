@@ -1,74 +1,79 @@
 const Alexa = require('ask-sdk-core');
-
 const main = require('./main');
 const helper = require('./helperFunctions');
 
-const HelpIntentHandler = {
+const UserTurnIntentHandler = {
     canHandle(handlerInput) {
+        
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'UserTurnIntent';
     },
+    
     handle(handlerInput) {
         
         var sessAttr = handlerInput.attributesManager.getSessionAttributes();
         var expectedNum = sessAttr.expectedNum;
         
-        const speakOutput = main.instructions + ' The last response was ' + helper.fizzBuzz(expectedNum) + 
-        '. OK, it is your turn, let\'s continue. '; 
+        var speakOutput;
         
-        console.log("these are the main.instructions " + main.instructions);
+        const inputNum = parseInt(Alexa.getSlotValue(handlerInput.requestEnvelope, 'number'), 10);
+        const inputFizz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'fizz');
+        const inputBuzz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'buzz');
+        const inputFizzBuzz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'fizzbuzz');
+        // determine which non-number slot type is used if any
+        const inputString = inputFizz || inputBuzz || inputFizzBuzz || undefined;
+        // inputString = inputString.toLowerCase();
         
-        var ret = handlerInput.responseBuilder.speak(speakOutput).reprompt(speakOutput + main.repromptMessage).getResponse();
-        sessAttr.repeat = ret;
-        sessAttr.expectedNum = expectedNum;
-        handlerInput.attributesManager.setSessionAttributes(sessAttr);
-        
-        return ret;
-    }
-};
+        console.log("This is inputNum " + inputNum);
+        console.log("This is inputFizz " + inputFizz);
+        console.log("This is inputBuzz " + inputBuzz);
+        console.log("This is inputFizzBuzz " + inputFizzBuzz);
+        console.log("This is inputFizzBuzz " + inputFizzBuzz);
+        console.log("This is inputString " + inputString);
+        console.log("This is expectedNum/Fizz/Buzz/FizzBuzz " + helper.fizzBuzz(expectedNum));
 
-const RepeatIntentHandler = {
-    canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.RepeatIntent';
-    },
-    handle(handlerInput) {
-        var attributes = handlerInput.attributesManager.getSessionAttributes();
-        
-        if (attributes.repeat != null) {
-            return attributes.repeat;
-        } else {
-            attributes.repeat = handlerInput.responseBuilder
-                .speak("Hey, there's nothing to repeat")
-                .getResponse();
-            handlerInput.attributesManager.setSessionAttributes(attributes);
-            return attributes.repeat; 
+        if (helper.isOption(inputNum, inputFizz, inputBuzz, inputFizzBuzz, inputFizzBuzz)) {
+            console.log("from unknown block");
+            speakOutput = "I don't understand that response. Please say a number, fizz, buzz, or fizzbuzz.";
+            
+            ret = handlerInput.responseBuilder.speak(speakOutput).reprompt(speakOutput + main.repromptMessage).getResponse();
+            sessAttr.repeat = ret;
+            
+            return ret;
         }
+
+        // increment expectedNum so that the value matches the user's and follows the game's progression
+        expectedNum++;
+        
+        // check if the user's input is correct by seeing if inputNum (number slot type)
+        // equals expectedNum or the inputString equals correct string for expectedNum
+        if ((inputNum === helper.fizzBuzz(expectedNum)) || inputString == helper.fizzBuzz(expectedNum)) {
+            
+            expectedNum++;
+            speakOutput = helper.fizzBuzz(expectedNum).toString();
+            
+            var ret = handlerInput.responseBuilder.speak(speakOutput).reprompt(speakOutput + main.repromptMessage).getResponse();
+            
+            sessAttr.repeat = ret;
+            sessAttr.expectedNum = expectedNum;
+            handlerInput.attributesManager.setSessionAttributes(sessAttr);
+            
+            return ret;
+        
+        } else {
+            
+            console.log("expectedNum from end game " + expectedNum);
+            speakOutput = "I’m sorry, the correct response was " + helper.fizzBuzz(expectedNum) + ". You lose! Thanks for playing Fizz Buzz. For another great Alexa game, check out Song Quiz!";
+            
+            sessAttr = null;
+            handlerInput.attributesManager.setSessionAttributes(sessAttr);
+            
+            return handlerInput.responseBuilder.speak(speakOutput).getResponse();
+        }
+        
     }
 };
-
-const CancelAndStopIntentHandler = {
-    canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-            && (Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.CancelIntent'
-                || Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.StopIntent');
-    },
-    handle(handlerInput) {
-        
-        const speakOutput = "It's a tie. Thanks for playing Fizz Buzz. For another great Alexa game, check out Song Quiz!";
-        var sessAttr = handlerInput.attributesManager.getSessionAttributes();
-        
-        var ret = handlerInput.responseBuilder.speak(speakOutput).getResponse();
-        sessAttr = null;
-        handlerInput.attributesManager.setSessionAttributes(sessAttr);
-        
-        return ret;
-    }
-};
-
 
 module.exports = {
-    HelpIntentHandler : HelpIntentHandler,
-    RepeatIntentHandler : RepeatIntentHandler,
-    CancelAndStopIntentHandler : CancelAndStopIntentHandler
+    UserTurnIntentHandler : UserTurnIntentHandler
 };
