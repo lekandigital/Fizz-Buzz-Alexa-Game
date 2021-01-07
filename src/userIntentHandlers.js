@@ -1,104 +1,74 @@
-import { Alexa } from './index.js'
+const Alexa = require('ask-sdk-core');
 
-const UserTurnIntentHandler = {
-    
+const main = require('./main');
+const helper = require('./helperFunctions');
+
+const HelpIntentHandler = {
     canHandle(handlerInput) {
-        
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'UserTurnIntent';
-    }, 
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
+    },
     handle(handlerInput) {
         
-        var speakOutput;
-        let inputNum = parseInt(Alexa.getSlotValue(handlerInput.requestEnvelope, 'number'), 10);
-        let inputFizz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'fizz');
-        let inputBuzz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'buzz');
-        let inputFizzBuzz = Alexa.getSlotValue(handlerInput.requestEnvelope, 'fizzbuzz');
-        // determine which non-number slot type is used if any
-        let inputString = inputFizz || inputBuzz || inputFizzBuzz || undefined;
-        // inputString = inputString.toLowerCase();
+        var sessAttr = handlerInput.attributesManager.getSessionAttributes();
+        var expectedNum = sessAttr.expectedNum;
         
-        console.log("This is inputNum " + inputNum);
-        console.log("This is inputFizz " + inputFizz);
-        console.log("This is inputBuzz " + inputBuzz);
-        console.log("This is inputFizzBuzz " + inputFizzBuzz);
-        console.log("This is inputFizzBuzz " + inputFizzBuzz);
-        console.log("This is inputString " + inputString);
-        console.log("This is expectedNum/Fizz/Buzz/FizzBuzz " + fizzBuzz(expectedNum));
+        const speakOutput = main.instructions + ' The last response was ' + helper.fizzBuzz(expectedNum) + 
+        '. OK, it is your turn, let\'s continue. '; 
+        
+        console.log("these are the main.instructions " + main.instructions);
+        
+        var ret = handlerInput.responseBuilder.speak(speakOutput).reprompt(speakOutput + main.repromptMessage).getResponse();
+        sessAttr.repeat = ret;
+        sessAttr.expectedNum = expectedNum;
+        handlerInput.attributesManager.setSessionAttributes(sessAttr);
+        
+        return ret;
+    }
+};
 
-        // checks for unrecognized inputs by seeing if input is not a possible option
-        if (isInt(inputNum) == false && inputFizz != "fizz" && inputBuzz != "buzz" && inputFizzBuzz != "fizzbuzz" && inputFizzBuzz != "fizz buzz") {
-            console.log("from unknown block");
-            speakOutput = "I don't understand that response. Please say a number, fizz, buzz, or fizzbuzz.";
-            return handlerInput.responseBuilder.speak(speakOutput).reprompt(speakOutput + " I'm going to close soon. Please respond.").getResponse();
-        }
+const RepeatIntentHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.RepeatIntent';
+    },
+    handle(handlerInput) {
+        var attributes = handlerInput.attributesManager.getSessionAttributes();
         
-        // increment expectedNum so that the value matches the user's and follows the game's progression
-        expectedNum++
-        
-        // check if the user's input is correct by seeing if inputNum (number slot type)
-        // equals expectedNum or the inputString equals correct string for expectedNu,
-        if ((inputNum === fizzBuzz(expectedNum)) || inputString == fizzBuzz(expectedNum)) {
-            expectedNum++;
-            speakOutput = fizzBuzz(expectedNum).toString();
-            return handlerInput.responseBuilder.speak(speakOutput).reprompt(speakOutput + " I'm going to close soon. Please respond.").getResponse();
+        if (attributes.repeat != null) {
+            return attributes.repeat;
         } else {
-            console.log("expectedNum from end game " + expectedNum);
-            speakOutput = "You lose! I’m sorry, the correct response was " + fizzBuzz(expectedNum) + ". Thanks for playing Fizz Buzz. For another great Alexa game, check out Song Quiz!";
-            endGame();
-            return handlerInput.responseBuilder.speak(speakOutput).getResponse();
+            attributes.repeat = handlerInput.responseBuilder
+                .speak("Hey, there's nothing to repeat")
+                .getResponse();
+            handlerInput.attributesManager.setSessionAttributes(attributes);
+            return attributes.repeat; 
         }
+    }
+};
+
+const CancelAndStopIntentHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && (Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.CancelIntent'
+                || Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.StopIntent');
+    },
+    handle(handlerInput) {
         
+        const speakOutput = "It's a tie. Thanks for playing Fizz Buzz. For another great Alexa game, check out Song Quiz!";
+        var sessAttr = handlerInput.attributesManager.getSessionAttributes();
+        
+        var ret = handlerInput.responseBuilder.speak(speakOutput).getResponse();
+        sessAttr = null;
+        handlerInput.attributesManager.setSessionAttributes(sessAttr);
+        
+        return ret;
     }
-}
-
-function customLevelOutput() {
-    
-}
-
-// this function determines if the correct output (fizz or buzz or fizz buzz or a number) based on the the given number
-function fizzBuzz(givenNum) {
-    
-    if (givenNum % 3 === 0 && givenNum % 5 !== 0) {
-        return "fizz";
-    } else if (givenNum % 5 === 0 && givenNum % 3 !== 0) {
-        return "buzz"; 
-    } else if (givenNum % 3 === 0 && givenNum % 5 === 0) {
-        return "fizz buzz";
-    } else {
-        return givenNum;
-    }
-}
-
-// this function is used to handle operations that have to be
-// completed as the game ends such and reseting expectedNum
-function endGame() {
-    expectedNum = 0;
-}
-
-// checks to see if input matches the int type
-function isInt(givenNum) {
-    
-    if (givenNum === parseInt(givenNum, 10)) {
-        return true;
-    } else {
-        return false;
-    }
-
-}
-
-module.exports = {
-    UserTurnIntentHandler : UserTurnIntentHandler
-}
+};
 
 
 module.exports = {
-    LaunchRequestHandler : LaunchRequestHandler,
     HelpIntentHandler : HelpIntentHandler,
     RepeatIntentHandler : RepeatIntentHandler,
-    CancelAndStopIntentHandler : CancelAndStopIntentHandler,
-    FallbackIntentHandler : FallbackIntentHandler,
-    SessionEndedRequestHandler : SessionEndedRequestHandler,
-    IntentReflectorHandler : IntentReflectorHandler,
-    ErrorHandler : ErrorHandler
-}
+    CancelAndStopIntentHandler : CancelAndStopIntentHandler
+};
