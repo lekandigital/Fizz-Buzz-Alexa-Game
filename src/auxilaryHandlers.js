@@ -1,12 +1,8 @@
-import { Alexa } from './index.js'
+const Alexa = require('ask-sdk-core');
 
-const welcomePrompt = 'The instructions are: \
-        We’ll each take turns counting up from one. \
-        However, you must replace numbers divisible by 3 with the word “fizz” \
-        and you must replace numbers divisible by 5 with the word “buzz”. \
-        If a number is divisible by both 3 and 5, you should instead say “fizz buzz”. \
-        If you get one wrong, you lose.';
-        
+const main = require('./main');
+const helper = require('./helperFunctions');
+
 const HelpIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
@@ -14,13 +10,20 @@ const HelpIntentHandler = {
     },
     handle(handlerInput) {
         
-        const speakOutput = welcomePrompt + " The last response was " + fizzBuzz(expectedNum) + 
-        ". OK, it's your turn, let's continue. "; 
+        var sessAttr = handlerInput.attributesManager.getSessionAttributes();
+        var expectedNum = sessAttr.expectedNum;
         
-        return handlerInput.responseBuilder
-            .speak(speakOutput)
-            .reprompt(speakOutput + " I'm going to close soon. Please respond.")
-            .getResponse();
+        const speakOutput = main.instructions + ' The last response was ' + helper.fizzBuzz(expectedNum) + 
+        '. OK, it is your turn, let\'s continue. '; 
+        
+        console.log("these are the main.instructions " + main.instructions);
+        
+        var ret = handlerInput.responseBuilder.speak(speakOutput).reprompt(speakOutput + main.repromptMessage).getResponse();
+        sessAttr.repeat = ret;
+        sessAttr.expectedNum = expectedNum;
+        handlerInput.attributesManager.setSessionAttributes(sessAttr);
+        
+        return ret;
     }
 };
 
@@ -30,29 +33,17 @@ const RepeatIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.RepeatIntent';
     },
     handle(handlerInput) {
+        var attributes = handlerInput.attributesManager.getSessionAttributes();
         
-        var speakOutput = ""
-        
-        if (fizzBuzz(expectedNum) == 1) {
-            speakOutput = 
-            "Welcome to Fizz Buzz. \
-            We’ll each take turns counting up from one. \
-            However, you must replace numbers divisible by 3 with the word “fizz” \
-            and you must replace numbers divisible by 5 with the word “buzz”. \
-            If a number is divisible by both 3 and 5, you should instead say “fizz buzz”. \
-            If you get one wrong, you lose. \
-            OK, I'll start... " + expectedNum;
+        if (attributes.repeat != null) {
+            return attributes.repeat;
         } else {
-            speakOutput = 
-            "The last response was " + fizzBuzz(expectedNum) + 
-            ". OK, it's your turn, let's continue. ";  
+            attributes.repeat = handlerInput.responseBuilder
+                .speak("Hey, there's nothing to repeat")
+                .getResponse();
+            handlerInput.attributesManager.setSessionAttributes(attributes);
+            return attributes.repeat; 
         }
-
-        
-        return handlerInput.responseBuilder
-            .speak(speakOutput)
-            .reprompt(speakOutput + " I'm going to close soon. Please respond.")
-            .getResponse();
     }
 };
 
@@ -64,43 +55,20 @@ const CancelAndStopIntentHandler = {
     },
     handle(handlerInput) {
         
-        const speakOutput = "Thanks for playing Fizz Buzz. For another great Alexa game, check out Song Quiz!";
+        const speakOutput = "It's a tie. Thanks for playing Fizz Buzz. For another great Alexa game, check out Song Quiz!";
+        var sessAttr = handlerInput.attributesManager.getSessionAttributes();
         
-        endGame();
+        var ret = handlerInput.responseBuilder.speak(speakOutput).getResponse();
+        sessAttr = null;
+        handlerInput.attributesManager.setSessionAttributes(sessAttr);
         
-        return handlerInput.responseBuilder
-            .speak(speakOutput)
-            .getResponse();
+        return ret;
     }
 };
-/* *
- * FallbackIntent triggers when a customer says something that doesn’t map to any intents in your skill
- * It must also be defined in the language model (if the locale supports it)
- * This handler can be safely added but will be ingnored in locales that do not support it yet 
- * */
-const FallbackIntentHandler = {
-    canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.FallbackIntent';
-    },
-    handle(handlerInput) {
-        const speakOutput =  welcomePrompt + " The last response was " + fizzBuzz(expectedNum) + 
-        ". OK, it's your turn, let's continue. "; 
 
-        return handlerInput.responseBuilder
-            .speak(speakOutput)
-            .reprompt(speakOutput + " I'm going to close soon. Please respond.")
-            .getResponse();
-    }
-};
 
 module.exports = {
-    LaunchRequestHandler : LaunchRequestHandler,
     HelpIntentHandler : HelpIntentHandler,
     RepeatIntentHandler : RepeatIntentHandler,
-    CancelAndStopIntentHandler : CancelAndStopIntentHandler,
-    FallbackIntentHandler : FallbackIntentHandler,
-    SessionEndedRequestHandler : SessionEndedRequestHandler,
-    IntentReflectorHandler : IntentReflectorHandler,
-    ErrorHandler : ErrorHandler
-}
+    CancelAndStopIntentHandler : CancelAndStopIntentHandler
+};
