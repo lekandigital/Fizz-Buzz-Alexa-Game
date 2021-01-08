@@ -6,7 +6,7 @@ I’m submitting this towards the very end of the 2.5 weeks allotted to me. I as
 
 I’m a student at Pitzer College and I’m pursuing a computer science bachelor's at Harvey Mudd. Trying to design for reduced user attention, while keeping the code as simple as possible seems challenging, very interesting and I would like to learn how to build software that does this from a YC backed team. Please consider me further for an internship at Volley this summer.
 
-The skill’s ARN (is below) along with the interaction model (model.json) to try the skill further.
+The skill’s ARN is below along with the interaction model, model.json in the project's root directory, to try the skill further.
 
 # Fizz-Buzz-Alexa
 ##### ARN: arn:aws:lambda:us-east-1:041301154326:function:serverlessrepo-bull-frog-alexaskillskitnodejsfacts-1UYDRT9UVY6KD
