@@ -58,6 +58,18 @@
                 {
                     "name": "AMAZON.RepeatIntent",
                     "samples": []
+                },
+                {
+                    "name": "ChangeThemeIntent",
+                    "slots": [
+                        {
+                            "name": "theme",
+                            "type": "theme"
+                        }
+                    ],
+                    "samples": [
+                        "change theme to {theme}"
+                    ]
                 }
             ],
             "types": [
@@ -92,6 +104,30 @@
                         {
                             "name": {
                                 "value": "fizzbuzz"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "theme",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "mortalcombat",
+                                "synonyms": [
+                                    "mortal kombat",
+                                    "mortal combat"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "nintendo"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "generic"
                             }
                         }
                     ]
