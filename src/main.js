@@ -1,42 +1,27 @@
+// The main.js javascript file contains all the default intents
+
 const Alexa = require('ask-sdk-core');
+const helperFunctions = require('./helperFunctions');
+const constants = require('./constants');
 
-const instructions = 'The instructions are: \
-        We’ll each take turns counting up from one. \
-        However, you must replace numbers divisible by 3 with the word “fizz” \
-        and you must replace numbers divisible by 5 with the word “buzz”. \
-        If a number is divisible by both 3 and 5, you should instead say “fizz buzz”. \
-        If you get one wrong, you lose.';
-const repromptMessage = ' I am going to close soon. Please respond.';
-
-// The expectedNum variable will be used to track how many times the skill has been called
-// and also to keep track of the current number in the fizz buzz game
-// var expectedNum = 0;
+// handles when the skill starts; invoked at launch of skill
 const LaunchRequestHandler = {
-    canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
-    },
-    handle(handlerInput) {
+	canHandle(handlerInput) {
+			return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
+        },
         
-        console.log("expectedNum from launch " + expectedNum);
-
-        var sessAttr = handlerInput.attributesManager.getSessionAttributes();
-        var expectedNum = 1;
-        
-        const speakOutput = 
-        "Welcome to Fizz Buzz. \
-        We’ll each take turns counting up from one. \
-        However, you must replace numbers divisible by 3 with the word “fizz” \
-        and you must replace numbers divisible by 5 with the word “buzz”. \
-        If a number is divisible by both 3 and 5, you should instead say “fizz buzz”. \
-        If you get one wrong, you lose. \
-        OK, I'll start... " + expectedNum;
-        
-        var ret = handlerInput.responseBuilder.speak(speakOutput).reprompt(speakOutput + repromptMessage).getResponse();
-        sessAttr.repeat = ret;
-        sessAttr.expectedNum = expectedNum;
-        handlerInput.attributesManager.setSessionAttributes(sessAttr);
-        return ret;
-    }
+		handle(handlerInput) {
+			var sessAttr = handlerInput.attributesManager.getSessionAttributes(); // stores the session attributes
+			var expectedNum = 1; // expected number keeps track of the game
+			var theme = constants.THEMES[Math.floor((Math.random() * 2) + 0)]; // makes the theme random by generating a random number between 0-2
+			const speakOutput = helperFunctions.getSpeakOutputForLevel(expectedNum, theme); // this is what the user will hear
+			var generatedReturn = handlerInput.responseBuilder.speak(speakOutput).reprompt(speakOutput + constants.REPROMPT_MESSAGE).getResponse(); // generates an return output
+			sessAttr.repeat = generatedReturn; // updates the repeat value in the session attributes
+			sessAttr.theme = theme; // updates the theme in the session attributes
+			sessAttr.expectedNum = expectedNum; // updates the expected number in the session attributes
+			handlerInput.attributesManager.setSessionAttributes(sessAttr); // sets session attributes
+			return generatedReturn;
+		}
 };
 
 /* *
@@ -45,41 +30,40 @@ const LaunchRequestHandler = {
  * respond or says something that does not match an intent defined in your voice model. 3) An error occurs 
  * */
 const SessionEndedRequestHandler = {
-    canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'SessionEndedRequest';
-    },
-    handle(handlerInput) {
-        console.log(`~~~~ Session ended: ${JSON.stringify(handlerInput.requestEnvelope)}`);
-        var sessAttr = handlerInput.attributesManager.getSessionAttributes();
-
-        var ret = handlerInput.responseBuilder.speak("ending session").getResponse();
-        sessAttr = null;
-        handlerInput.attributesManager.setSessionAttributes(sessAttr);
+	canHandle(handlerInput) {
+			return Alexa.getRequestType(handlerInput.requestEnvelope) === 'SessionEndedRequest';
+        },
         
-        return ret;
-    }
+		handle(handlerInput) {
+			console.log(`~~~~ Session ended: ${JSON.stringify(handlerInput.requestEnvelope)}`);
+			var sessAttr = handlerInput.attributesManager.getSessionAttributes(); // stores the session attributes
+			var generatedReturn = handlerInput.responseBuilder.speak(constants.B_BYE + "ending session").getResponse(); // generates an return output
+			sessAttr = null; // clears the session attributes
+			handlerInput.attributesManager.setSessionAttributes(sessAttr); // sets the session attributes
+			return generatedReturn;
+		}
 };
 
+// this handles errors that occur
 const ErrorHandler = {
-    canHandle() {
-        return true;
-    },
-    handle(handlerInput, error) {
-        const speakOutput = 'Sorry, I had trouble doing what you asked. The error message is ' + error.message + ' Please contact someone at Volley about this and try again.';
-        console.log(`~~~~ Error handled: ${JSON.stringify(error)}`);
-
-        var sessAttr = handlerInput.attributesManager.getSessionAttributes();
-        var ret = handlerInput.responseBuilder.speak(speakOutput).reprompt(speakOutput + repromptMessage).getResponse();
-        sessAttr.repeat = ret;
-        handlerInput.attributesManager.setSessionAttributes(sessAttr);
-        return ret;
-    }
+	canHandle() {
+			return true;
+        },
+        
+		handle(handlerInput, error) {
+			const speakOutput = 'Sorry, I had trouble doing what you asked. The error message is ' + error.message + ' Please contact someone at Volley about this and try again.';
+			console.log(`~~~~ Error handled: ${JSON.stringify(error)}`);
+			var sessAttr = handlerInput.attributesManager.getSessionAttributes(); // stores the session attributes
+			var generatedReturn = handlerInput.responseBuilder.speak(constants.U_UNRECOGNIZED + speakOutput).reprompt(speakOutput + constants.REPROMPT_MESSAGE).getResponse(); // generates an return output
+			sessAttr.repeat = generatedReturn; // updates the repeat value in the session attributes
+			handlerInput.attributesManager.setSessionAttributes(sessAttr); // sets the session attributes
+			return generatedReturn;
+		}
 };
 
+// exports
 module.exports = {
-    LaunchRequestHandler : LaunchRequestHandler,
-    SessionEndedRequestHandler : SessionEndedRequestHandler,
-    ErrorHandler : ErrorHandler,
-    instructions : instructions,
-    repromptMessage : repromptMessage
+	LaunchRequestHandler: LaunchRequestHandler,
+	SessionEndedRequestHandler: SessionEndedRequestHandler,
+	ErrorHandler: ErrorHandler
 };
