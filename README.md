@@ -8,7 +8,7 @@ I’m a student at Pitzer College and I’m pursuing a computer science bachelor
 
 The skill’s ARN is below along with the interaction model, model.json in the project's root directory, to try the skill further.
 
-Blog: yeri.io/hi
+Blog: https://yeri.io/hi
 
 Resume: https://docs.google.com/document/d/1YVJ0tyO8PrHK0HXZZAjejJe7JQfqxbctioQgsBwWKcc/edit?usp=sharing
 
