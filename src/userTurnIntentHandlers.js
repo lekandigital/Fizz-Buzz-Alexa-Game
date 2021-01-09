@@ -31,7 +31,7 @@ const UserTurnIntentHandler = {
 				return generatedReturn;
 			} else { // it is a valid option
 				expectedNum++; // increment expectedNum so that the value matches the user and follows the game's progression
-            	}
+            		}
             
 			// handle the given slot
 			if((inputNum === helperFunctions.determineFizzBuzz(expectedNum)) || inputString == helperFunctions.determineFizzBuzz(expectedNum)) { // check if the user's input is correct by seeing if inputNum (number slot type) equals expectedNum or the inputString equals correct string for expectedNum
