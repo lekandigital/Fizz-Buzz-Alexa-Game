@@ -13,7 +13,7 @@ const LaunchRequestHandler = {
 		handle(handlerInput) {
 			var sessAttr = handlerInput.attributesManager.getSessionAttributes(); // stores the session attributes
 			var expectedNum = 1; // expected number keeps track of the game
-			var theme = constants.THEMES[Math.floor((Math.random() * 2) + 0)]; // makes the theme random by generating a random number between 0-2
+			var theme = constants.THEMES[Math.floor((Math.random() * 3) + 0)]; // makes the theme random by generating a random number between 0-2
 			const speakOutput = helperFunctions.getSpeakOutputForLevel(expectedNum, theme); // this is what the user will hear
 			var generatedReturn = handlerInput.responseBuilder.speak(speakOutput).reprompt(speakOutput + constants.REPROMPT_MESSAGE).getResponse(); // generates an return output
 			sessAttr.repeat = generatedReturn; // updates the repeat value in the session attributes
