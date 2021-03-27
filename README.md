@@ -1,10 +1,4 @@
-Hi,
-
-Thank you for considering me for this internship.
-
-I’m submitting this towards the very end of the 2.5 weeks allotted to me. I asked for feedback because I haven’t used Node.js to make a project before and I didn't read the Alexa Skill Kit documentation from start to finish. The application isn't that robust ie. HelpIntent says instructions as opposed to instructions being an intent which may be costly (time, attention, etc. for the user). But I have: tried to include some creativity through the nostalgic sound assets, made the code organized and well documented, and handle errors or unexpected responses among possibly other things.
-
-I’m a student at Pitzer College and I’m pursuing a computer science bachelor's at Harvey Mudd. Trying to design for reduced user attention, while keeping the code as simple as possible seems challenging, very interesting and I would like to learn how to build products that do this from a YC backed team. Please consider me further for an internship at Volley this summer.
+This skill teaches multiplication by using the Amazon Alexa for the game math game called FizzBuzz.
 
 The skill’s ARN is below along with the interaction model, model.json in the project's root directory, to try the skill further.
 
