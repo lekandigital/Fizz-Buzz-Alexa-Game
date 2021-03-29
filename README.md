@@ -4,8 +4,6 @@ The skill’s ARN is below along with the interaction model, model.json in the p
 
 Blog: https://yeri.io/hi
 
-Resume: https://docs.google.com/document/d/1YVJ0tyO8PrHK0HXZZAjejJe7JQfqxbctioQgsBwWKcc/edit?usp=sharing
-
 Writting on NLP (from February): https://www.notion.so/UX-Seriously-when-was-the-last-time-you-used-Siri-14bdc41874b649bb9c9761ffe2cea79f
 
 # Fizz-Buzz-Alexa
