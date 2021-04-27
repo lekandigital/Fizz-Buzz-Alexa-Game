@@ -21,4 +21,4 @@ Writting on NLP (from February): https://www.notion.so/UX-Seriously-when-was-the
 
 ## Copyright and license
 
-InjuryEmotion is licensed under MIT. Documentation under CC BY 3.0.
+Fizz-Buzz-Alexa is licensed under MIT. Documentation under CC BY 3.0.
