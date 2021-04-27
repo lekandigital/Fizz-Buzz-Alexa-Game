@@ -4,7 +4,7 @@ The skill’s ARN is below along with the interaction model, model.json in the p
 
 Blog: https://yeri.io
 
-Writting on NLP (from February): https://www.notion.so/UX-Seriously-when-was-the-last-time-you-used-Siri-14bdc41874b649bb9c9761ffe2cea79f
+Writting on NLP (from February): https://www.notion.so/UX-Seriously-when-was-the-last-time-you-used-Siri-29b577da5082421c8aafd578d2f26e63
 
 # Fizz-Buzz-Alexa
 ##### ARN: arn:aws:lambda:us-east-1:041301154326:function:serverlessrepo-bull-frog-alexaskillskitnodejsfacts-1UYDRT9UVY6KD
