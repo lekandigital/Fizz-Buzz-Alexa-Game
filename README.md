@@ -18,3 +18,7 @@ Writting on NLP (from February): https://www.notion.so/UX-Seriously-when-was-the
 ##### 1. Improve control flow so levels work properly
 ##### 2. MC_START_01 (the gong sound effect) cuts too soon
 ##### 3. U_UNRECOGNIZED (error sound effect) needs to be changed so users can better discern an error
+
+## Copyright and license
+
+InjuryEmotion is licensed under MIT. Documentation under CC BY 3.0.
