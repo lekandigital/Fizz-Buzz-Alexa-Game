@@ -6,7 +6,7 @@ Blog: https://yeri.io
 
 Writting on NLP (from February): https://www.notion.so/UX-Seriously-when-was-the-last-time-you-used-Siri-29b577da5082421c8aafd578d2f26e63
 
-# Fizz-Buzz-Alexa
+# Fizz Buzz Alexa Game
 ##### ARN: arn:aws:lambda:us-east-1:041301154326:function:serverlessrepo-bull-frog-alexaskillskitnodejsfacts-1UYDRT9UVY6KD
 ### Demos
 ##### Full gameplay: https://youtu.be/oOxdgA38cTU
@@ -21,4 +21,4 @@ Writting on NLP (from February): https://www.notion.so/UX-Seriously-when-was-the
 
 ## Copyright and license
 
-Fizz-Buzz-Alexa is licensed under MIT. Documentation under CC BY 3.0.
+Fizz Buzz Alexa Game is licensed under MIT. Documentation under CC BY 3.0.
