@@ -2,7 +2,7 @@ This skill teaches multiplication by using the Amazon Alexa for the math game ca
 
 The skill’s ARN is below along with the interaction model, model.json in the project's root directory, to try the skill further.
 
-Blog: https://yeri.io/hi
+Blog: https://yeri.io
 
 Writting on NLP (from February): https://www.notion.so/UX-Seriously-when-was-the-last-time-you-used-Siri-14bdc41874b649bb9c9761ffe2cea79f
 
