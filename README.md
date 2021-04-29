@@ -2,6 +2,8 @@
 
 This skill teaches multiplication by using the Amazon Alexa for the math game called FizzBuzz.
 
+<img src="Demo_Final.gif"  height="490">  
+
 The skill’s ARN is below along with the interaction model, model.json in the project's root directory, to try the skill further.
 
 ## Demos
