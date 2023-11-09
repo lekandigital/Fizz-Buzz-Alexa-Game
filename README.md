@@ -20,3 +20,6 @@ The skill’s ARN is below along with the interaction model, model.json in the p
 ## Copyright and license
 
 Fizz Buzz Alexa Game is licensed under MIT. Documentation under CC BY 3.0.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
